@@ -1,5 +1,5 @@
 <template>
-    <form :class="classes" :autocomplete="autocomplete"><slot></slot></form>
+    <form @submit.native.prevent :class="classes" :autocomplete="autocomplete"><slot></slot></form>
 </template>
 <script>
     import { oneOf } from '../../utils/assist';

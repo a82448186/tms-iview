@@ -86,48 +86,8 @@
                 type: Number
             },
             beforeUpload: Function,
-            onProgress: {
-                type: Function,
-                default () {
-                    return {};
-                }
-            },
-            onSuccess: {
-                type: Function,
-                default () {
-                    return {};
-                }
-            },
-            onError: {
-                type: Function,
-                default () {
-                    return {};
-                }
-            },
-            onRemove: {
-                type: Function,
-                default () {
-                    return {};
-                }
-            },
-            onPreview: {
-                type: Function,
-                default () {
-                    return {};
-                }
-            },
-            onExceededSize: {
-                type: Function,
-                default () {
-                    return {};
-                }
-            },
-            onFormatError: {
-                type: Function,
-                default () {
-                    return {};
-                }
-            },
+
+
             defaultFileList: {
                 type: Array,
                 default() {
@@ -199,10 +159,8 @@
 
                 const before = this.beforeUpload(file);
                 if (before && before.then) {
-                    before.then(processedFile => {
-                        if (Object.prototype.toString.call(processedFile) === '[object File]') {
-                            this.post(processedFile);
-                        } else {
+                    before.then(res => {
+                        if (res) {
                             this.post(file);
                         }
                     }, () => {
@@ -220,7 +178,7 @@
                     const _file_format = file.name.split('.').pop().toLocaleLowerCase();
                     const checked = this.format.some(item => item.toLocaleLowerCase() === _file_format);
                     if (!checked) {
-                        this.onFormatError(file, this.fileList);
+                        this.$emit('format-error',file, this.fileList);
                         return false;
                     }
                 }
@@ -228,7 +186,7 @@
                 // check maxSize
                 if (this.maxSize) {
                     if (file.size > this.maxSize * 1024) {
-                        this.onExceededSize(file, this.fileList);
+                        this.$emit('exceeded-size',file, this.fileList);
                         return false;
                     }
                 }
@@ -260,10 +218,12 @@
                 const _file = {
                     status: 'uploading',
                     name: file.name,
+                    objectName: file.objectName,
                     size: file.size,
                     percentage: 0,
                     uid: file.uid,
-                    showProgress: true
+                    showProgress: true,
+                    url: file.url,
                 };
 
                 this.fileList.push(_file);
@@ -279,7 +239,7 @@
             },
             handleProgress (e, file) {
                 const _file = this.getFile(file);
-                this.onProgress(e, _file, this.fileList);
+                this.$emit('progress',e, _file, this.fileList);
                 _file.percentage = e.percent || 0;
             },
             handleSuccess (res, file) {
@@ -290,7 +250,7 @@
                     _file.response = res;
 
                     this.dispatch('FormItem', 'on-form-change', _file);
-                    this.onSuccess(res, _file, this.fileList);
+                    this.$emit('success',res, _file, this.fileList);
 
                     setTimeout(() => {
                         _file.showProgress = false;
@@ -305,16 +265,16 @@
 
                 fileList.splice(fileList.indexOf(_file), 1);
 
-                this.onError(err, response, file);
+                this.$emit('error',err, response, file);
             },
             handleRemove(file) {
                 const fileList = this.fileList;
                 fileList.splice(fileList.indexOf(file), 1);
-                this.onRemove(file, fileList);
+                this.$emit('remove',file, fileList);
             },
             handlePreview(file) {
                 if (file.status === 'finished') {
-                    this.onPreview(file);
+                    this.$emit('preview',file);
                 }
             },
             clearFiles() {
@@ -331,6 +291,7 @@
                         item.uid = Date.now() + this.tempIndex++;
                         return item;
                     });
+                    this.$emit('default-change', this.fileList)
                 }
             }
         },

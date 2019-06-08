@@ -37,7 +37,7 @@
                     :remote="remote"
                     :input-element-id="elementId"
                     :initial-label="initialLabel"
-                    :placeholder="placeholder"
+                    :placeholder="disabled?'':placeholder"
                     :query-prop="query"
 
                     @on-query-change="onQueryChange"

@@ -29,7 +29,7 @@
                 :readonly="readonly || !editable"
                 :name="name"
                 :value="formatterValue"
-                :placeholder="placeholder">
+                :placeholder="(disabled||readonly)?'':placeholder">
         </div>
     </div>
 </template>
