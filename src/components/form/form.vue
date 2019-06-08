@@ -1,5 +1,5 @@
 <template>
-    <form @submit.native.prevent :class="classes" :autocomplete="autocomplete"><slot></slot></form>
+    <form @submit="submit" :class="classes" :autocomplete="autocomplete"><slot></slot></form>
 </template>
 <script>
     import { oneOf } from '../../utils/assist';
@@ -59,6 +59,9 @@
             }
         },
         methods: {
+            submit(e){
+                e.preventDefault()
+            },
             resetFields() {
                 this.fields.forEach(field => {
                     field.resetField();
