@@ -216,6 +216,7 @@
             handleStart (file) {
                 file.uid = Date.now() + this.tempIndex++;
                 const _file = {
+                    attachment: file.attachment||{url: file.url},
                     status: 'uploading',
                     name: file.name,
                     objectName: file.objectName,

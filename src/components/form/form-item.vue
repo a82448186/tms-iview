@@ -71,6 +71,10 @@
             },
             labelFor: {
                 type: String
+            },
+            type: {
+                type: [String, Array],
+                default: 'string'
             }
         },
         data () {
@@ -124,8 +128,11 @@
                     if (path.indexOf(':') !== -1) {
                         path = path.replace(/:/, '.');
                     }
-
-                    return getPropByPath(model, path).v;
+                    let val = getPropByPath(model, path).v
+                    if(typeof val === 'string') {
+                        val = val.trim()
+                    }
+                    return val;
                 }
             },
             labelStyles () {
@@ -150,14 +157,15 @@
         methods: {
             setRules() {
                 let rules = this.getRules();
-                if (rules.length&&this.required) {
-                    return;
-                }else if (rules.length) {
+                if (rules.length) {
                     rules.every((rule) => {
                         this.isRequired = rule.required;
                     });
                 }else if (this.required){
                     this.isRequired = this.required;
+                }
+                if(!rules.length) {
+                    return
                 }
                 this.$off('on-form-blur', this.onFieldBlur);
                 this.$off('on-form-change', this.onFieldChange);
@@ -166,11 +174,11 @@
             },
             getRules () {
                 let formRules = this.form.rules;
-                const selfRules = this.rules;
+                const selfRules = this.rules||[];
 
                 formRules = formRules ? formRules[this.prop] : [];
-
-                return [].concat(selfRules || formRules || []);
+                formRules = formRules || []
+                return [].concat(selfRules,formRules,(this.required?[{required: true, message: this.label+'必填',trigger: 'change,blur',type: this.type}]:[]));
             },
             getFilteredRule (trigger) {
                 const rules = this.getRules();
@@ -184,9 +192,9 @@
                         callback();
                         return true;
                     }else {
-                        rules = [{required: true}];
+                        rules = [{required: true, message: this.label+'必填',trigger: 'change,blur'}];
                     }
-                }
+                } 
 
                 this.validateState = 'validating';
 

@@ -16,7 +16,7 @@
                 ref="input"
                 :type="type"
                 :class="inputClasses"
-                :placeholder="(disabled)?'':placeholder"
+                :placeholder="placeholder"
                 :disabled="disabled"
                 :maxlength="maxlength"
                 :readonly="readonly"
@@ -293,7 +293,7 @@
                 const e = { target: { value: '' } };
                 this.$emit('input', '');
                 this.$emit('clear', '');
-                
+
                 this.setCurrentValue('');
                 this.$emit('on-change', e);
             },

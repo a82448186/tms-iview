@@ -494,10 +494,10 @@
             },
             onClickOutside(event){
                 if (this.visible) {
-                    if (event.type === 'mousedown') {
-                        event.preventDefault();
-                        return;
-                    }
+                    //if (event.type === 'mousedown') {
+                    //    event.preventDefault();
+                    //    return;
+                    //}
 
                     if (this.transfer) {
                         const {$el} = this.$refs.dropdown;
@@ -516,8 +516,8 @@
                         });
                     }
 
-                    if (!this.autoComplete) event.stopPropagation();
-                    event.preventDefault();
+                    //if (!this.autoComplete) event.stopPropagation();
+                    //event.preventDefault();
                     this.hideMenu();
                     this.isFocused = true;
                 } else {
@@ -656,7 +656,7 @@
             },
             changeEmptyValue(value){
                 if((value=== null|| typeof this.value === 'number') &&  typeof value === 'undefined') {
-                    return null 
+                    return null
                 } else{
                     return value
                 }
